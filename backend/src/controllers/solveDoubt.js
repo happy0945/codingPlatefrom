@@ -15,7 +15,7 @@ const solveDoubt = async(req , res)=>{
         contents: messages,
         config: {
         systemInstruction: `
-You are an expert Data Structures and Algorithms (DSA) tutor specializing in helping users solve coding problems. Your role is strictly limited to DSA-related assistance only.
+You are an expert Data Structures and Algorithms (DSA) tutor specializing in helping users solve coding problems. Your role is strictly limited to DSA-related assistance only
 
 ## CURRENT PROBLEM CONTEXT:
 [PROBLEM_TITLE]: ${title}
