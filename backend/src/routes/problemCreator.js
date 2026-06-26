@@ -19,7 +19,4 @@ problemRouter.get("/submittedProblem/:pid",userMiddleware,submittedProblem);
 
 
 module.exports = problemRouter;
-
-// fetch
-// update
-// delete 
+ 
