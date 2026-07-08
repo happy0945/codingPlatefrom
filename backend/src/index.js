@@ -29,7 +29,7 @@ app.use('/ai',aiRouter);
 app.use("/video",videoRouter);
 
 
-const InitalizeConnection = async ()=>{
+const InitializeConnection = async ()=>{
     try{
 
         await Promise.all([main(),redisClient.connect()]);
@@ -46,5 +46,5 @@ const InitalizeConnection = async ()=>{
 }
 
 
-InitalizeConnection();
+InitializeConnection();
 

@@ -22,7 +22,7 @@ function Admin() {
       icon: Edit,
       color: 'btn-warning',
       bgColor: 'bg-warning/10',
-      route: '/admin/update'
+      route: '/admin/updateList'
     },
     {
       id: 'delete',

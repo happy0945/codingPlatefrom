@@ -1,7 +1,5 @@
 const axios = require("axios");
 
-const JUDGE0_URL = "https://ce.judge0.com";
-
 const getLanguageById = (lang) => {
     const language = {
         "c++": 54,
@@ -15,7 +13,7 @@ const getLanguageById = (lang) => {
 const submitBatch = async (submissions) => {
     try {
         const response = await axios.post(
-            `${JUDGE0_URL}/submissions/batch`,
+            `${process.env.JUDGE0_URL}/submissions/batch`,
             {
                 submissions,
             },
@@ -49,7 +47,7 @@ const submitToken = async (tokens) => {
     while (true) {
         try {
             const response = await axios.get(
-                `${JUDGE0_URL}/submissions/batch`,
+                `${process.env.JUDGE0_URL}/submissions/batch`,
                 {
                     params: {
                         tokens: tokenString,
