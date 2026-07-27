@@ -14,7 +14,7 @@ const cors = require('cors')
 // console.log("Hello")
 
 app.use(cors({
-    origin : "https://coding-platefrom.vercel.app",
+    origin : "https://coding-platefrom.vercel.app/",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
 }))
