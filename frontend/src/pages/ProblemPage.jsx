@@ -89,14 +89,21 @@ const ProblemPage = () => {
       setActiveRightTab('testcase');
       
     } catch (error) {
-      console.error('Error running code:', error);
-      setRunResult({
-        success: false,
-        error: 'Internal server error'
-      });
-      setLoading(false);
-      setActiveRightTab('testcase');
-    }
+  console.error(error);
+
+  setRunResult({
+    success: false,
+    error:
+      error.response?.data?.error ||
+      error.response?.data?.message ||
+      error.message ||
+      "Compilation Error",
+    testCases: []
+  });
+
+  setLoading(false);
+  setActiveRightTab("testcase");
+}
   };
 
   const handleSubmitCode = async () => {
@@ -114,11 +121,24 @@ const ProblemPage = () => {
        setActiveRightTab('result');
       
     } catch (error) {
-      console.error('Error submitting code:', error);
-      setSubmitResult(null);
-      setLoading(false);
-      setActiveRightTab('result');
-    }
+  console.error(error);
+
+  setSubmitResult({
+    accepted: false,
+    error:
+      error.response?.data?.error ||
+      error.response?.data?.message ||
+      error.message ||
+      "Compilation Error",
+    passedTestCases: 0,
+    totalTestCases: 0,
+    runtime: 0,
+    memory: 0
+  });
+
+  setLoading(false);
+  setActiveRightTab("result");
+}
   };
 
   const getLanguageForMonaco = (lang) => {
@@ -395,7 +415,7 @@ const ProblemPage = () => {
                         <p className="text-sm">Memory: {runResult.memory+" KB"}</p>
                         
                         <div className="mt-4 space-y-2">
-                          {runResult.testCases.map((tc, i) => (
+                          {runResult.testCases?.map((tc, i) => (
                             <div key={i} className="bg-base-100 p-3 rounded text-xs">
                               <div className="font-mono">
                                 <div><strong>Input:</strong> {tc.stdin}</div>
@@ -410,10 +430,15 @@ const ProblemPage = () => {
                         </div>
                       </div>
                     ) : (
-                      <div>
-                        <h4 className="font-bold">❌ Error</h4>
+                  <div>
+                    <h4 className="font-bold text-red-500">❌ Compilation Error</h4>
+            <pre className="mt-3 bg-base-200 rounded-lg p-3 whitespace-pre-wrap text-red-500 overflow-x-auto">
+                {runResult.compileError ||
+                runResult.runtimeError ||
+                "Wrong Answer"}
+            </pre>
                         <div className="mt-4 space-y-2">
-                          {runResult.testCases.map((tc, i) => (
+                          {runResult.testCases?.map((tc, i) => (
                             <div key={i} className="bg-base-100 p-3 rounded text-xs">
                               <div className="font-mono">
                                 <div><strong>Input:</strong> {tc.stdin}</div>
@@ -455,7 +480,10 @@ const ProblemPage = () => {
                       </div>
                     ) : (
                       <div>
-                        <h4 className="font-bold text-lg">❌ {submitResult.error}</h4>
+                        <h4 className="font-bold text-lg text-red-500">❌ Failed</h4>
+                        <pre className="bg-base-200 rounded-lg p-3 mt-3 whitespace-pre-wrap text-red-500">
+                            {submitResult.error}
+                        </pre>
                         <div className="mt-4 space-y-2">
                           <p>Test Cases Passed: {submitResult.passedTestCases}/{submitResult.totalTestCases}</p>
                         </div>
