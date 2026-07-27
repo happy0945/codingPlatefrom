@@ -1,88 +1,100 @@
+
 const axios = require("axios");
 
-const getLanguageById = (lang) => {
-    const language = {
-        "c++": 54,
-        "java": 62,
-        "javascript": 102,
-    };
+const getLanguageById = (language) => {
+  const languages = {
+    "c++": 54,
+    java: 62,
+    javascript: 102,
+  };
 
-    return language[lang.toLowerCase()];
+  return languages[language.toLowerCase()];
 };
 
 const submitBatch = async (submissions) => {
-    try {
-        const response = await axios.post(
-            `${process.env.JUDGE0_URL}/submissions/batch`,
-            {
-                submissions,
-            },
-            {
-                params: {
-                    base64_encoded: false,
-                },
-            }
-        );
-
-        console.log("Submit Response:");
-        console.log(response.data);
-
-        return response.data;
-    } catch (error) {
-        console.log("Submit Batch Error");
-        console.log(error.response?.data || error.message);
-        throw error;
+  const { data } = await axios.post(
+    `${process.env.JUDGE0_URL}/submissions/batch`,
+    { submissions },
+    {
+      params: {
+        base64_encoded: false,
+      },
     }
+  );
+
+  return data;
 };
 
-const waiting = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const decodeBase64 = (value) => {
+  if (!value) return null;
+
+  try {
+    return Buffer.from(value, "base64").toString("utf8");
+  } catch (err) {
+    return value;
+  }
+};
 
 const submitToken = async (tokens) => {
-
-    // tokens is ["abc","xyz","pqr"]
     const tokenString = tokens.join(",");
 
-    console.log("Polling Tokens:", tokenString);
-
-    while (true) {
-        try {
-            const response = await axios.get(
-                `${process.env.JUDGE0_URL}/submissions/batch`,
-                {
-                    params: {
-                        tokens: tokenString,
-                        base64_encoded: false,
-                        fields:
-                            "stdout,stderr,compile_output,time,memory,status_id,status",
-                    },
-                }
-            );
-
-            const results = response.data.submissions;
-
-            console.log(results);
-
-            const isFinished = results.every(
-                (result) => result.status_id > 2
-            );
-
-            if (isFinished) {
-                return results;
-            }
-
-            console.log("Waiting...");
-            await waiting(1000);
-        } catch (error) {
-            console.log("Polling Error");
-            console.log(error.response?.data || error.message);
-            throw error;
+  while (true) {
+    try {
+      const response = await axios.get(
+        `${process.env.JUDGE0_URL}/submissions/batch`,
+        {
+          params: {
+            tokens: tokenString,
+            base64_encoded: true,
+            fields:
+              "stdout,stderr,compile_output,message,time,memory,status,status_id",
+          },
         }
+      );
+
+      const results = response.data.submissions;
+
+      if (!results) {
+        throw new Error("Judge0 did not return submissions.");
+      }
+
+      // Decode Base64 response
+      results.forEach((item) => {
+        item.stdout = decodeBase64(item.stdout);
+        item.stderr = decodeBase64(item.stderr);
+        item.compile_output = decodeBase64(item.compile_output);
+        item.message = decodeBase64(item.message);
+      });
+
+      console.log("Decoded Results:");
+      console.log(JSON.stringify(results, null, 2));
+
+      const finished = results.every(
+        (submission) => submission.status_id > 2
+      );
+
+      if (finished) {
+        return results;
+      }
+
+      await delay(1000);
+    } catch (err) {
+      console.log("====================================");
+      console.log("Judge0 Error");
+      console.log("Status:", err.response?.status);
+      console.log("Response:");
+      console.log(JSON.stringify(err.response?.data, null, 2));
+      console.log("====================================");
+
+      throw err;
     }
+  }
 };
 
-
 module.exports = {
-    getLanguageById,
-    submitBatch,
-    submitToken,
+  getLanguageById,
+  submitBatch,
+  submitToken,
 };
