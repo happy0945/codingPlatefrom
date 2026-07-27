@@ -28,6 +28,7 @@ app.use('/submission',submitRouter);
 app.use('/ai',aiRouter);
 app.use("/video",videoRouter);
 
+const PORT = process.env.PORT || 5000;
 
 const InitializeConnection = async ()=>{
     try{
