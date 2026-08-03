@@ -107,6 +107,7 @@ const ProblemPage = () => {
       });
       setRunResult(data);
       setActiveRightTab('testcase');
+<<<<<<< HEAD
     } catch (err) {
       setRunResult({
         success: false,
@@ -115,6 +116,25 @@ const ProblemPage = () => {
       });
       setActiveRightTab('testcase');
     } finally { setLoading(false); }
+=======
+      
+    } catch (error) {
+  console.error(error);
+
+  setRunResult({
+    success: false,
+    error:
+      error.response?.data?.error ||
+      error.response?.data?.message ||
+      error.message ||
+      "Compilation Error",
+    testCases: []
+  });
+
+  setLoading(false);
+  setActiveRightTab("testcase");
+}
+>>>>>>> 291ecfcc7d3e6c3d1cbd6f0d18a3b7cd6530858e
   };
 
   // Submit code
@@ -125,6 +145,7 @@ const ProblemPage = () => {
       const { data } = await axiosClient.post(`/submission/submit/${problemId}`, {
         code, language: selectedLanguage
       });
+<<<<<<< HEAD
       setSubmitResult(data);
       setActiveRightTab('result');
     } catch (err) {
@@ -135,6 +156,50 @@ const ProblemPage = () => {
       });
       setActiveRightTab('result');
     } finally { setLoading(false); }
+=======
+
+       setSubmitResult(response.data);
+       setLoading(false);
+       setActiveRightTab('result');
+      
+    } catch (error) {
+  console.error(error);
+
+  setSubmitResult({
+    accepted: false,
+    error:
+      error.response?.data?.error ||
+      error.response?.data?.message ||
+      error.message ||
+      "Compilation Error",
+    passedTestCases: 0,
+    totalTestCases: 0,
+    runtime: 0,
+    memory: 0
+  });
+
+  setLoading(false);
+  setActiveRightTab("result");
+}
+  };
+
+  const getLanguageForMonaco = (lang) => {
+    switch (lang) {
+      case 'javascript': return 'javascript';
+      case 'java': return 'java';
+      case 'cpp': return 'cpp';
+      default: return 'javascript';
+    }
+  };
+
+  const getDifficultyColor = (difficulty) => {
+    switch (difficulty) {
+      case 'easy': return 'text-green-500';
+      case 'medium': return 'text-yellow-500';
+      case 'hard': return 'text-red-500';
+      default: return 'text-gray-500';
+    }
+>>>>>>> 291ecfcc7d3e6c3d1cbd6f0d18a3b7cd6530858e
   };
 
   // Loading skeleton
@@ -314,11 +379,132 @@ const ProblemPage = () => {
                       style={{ background: 'linear-gradient(135deg,#22c55e,#16a34a)' }}>
                       📤 Submit
                     </button>
+<<<<<<< HEAD
+=======
+                  ))}
+                </div>
+              </div>
+
+              {/* Monaco Editor */}
+              <div className="flex-1">
+                <Editor
+                  height="100%"
+                  language={getLanguageForMonaco(selectedLanguage)}
+                  value={code}
+                  onChange={handleEditorChange}
+                  onMount={handleEditorDidMount}
+                  theme="vs-dark"
+                  options={{
+                    fontSize: 14,
+                    minimap: { enabled: false },
+                    scrollBeyondLastLine: false,
+                    automaticLayout: true,
+                    tabSize: 2,
+                    insertSpaces: true,
+                    wordWrap: 'on',
+                    lineNumbers: 'on',
+                    glyphMargin: false,
+                    folding: true,
+                    lineDecorationsWidth: 10,
+                    lineNumbersMinChars: 3,
+                    renderLineHighlight: 'line',
+                    selectOnLineNumbers: true,
+                    roundedSelection: false,
+                    readOnly: false,
+                    cursorStyle: 'line',
+                    mouseWheelZoom: true,
+                  }}
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="p-4 border-t border-base-300 flex justify-between">
+                <div className="flex gap-2">
+                  <button 
+                    className="btn btn-ghost btn-sm"
+                    onClick={() => setActiveRightTab('testcase')}
+                  >
+                    Console
+                  </button>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    className={`btn btn-outline btn-sm ${loading ? 'loading' : ''}`}
+                    onClick={handleRun}
+                    disabled={loading}
+                  >
+                    Run
+                  </button>
+                  <button
+                    className={`btn btn-primary btn-sm ${loading ? 'loading' : ''}`}
+                    onClick={handleSubmitCode}
+                    disabled={loading}
+                  >
+                    Submit
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeRightTab === 'testcase' && (
+            <div className="flex-1 p-4 overflow-y-auto">
+              <h3 className="font-semibold mb-4">Test Results</h3>
+              {runResult ? (
+                <div className={`alert ${runResult.success ? 'alert-success' : 'alert-error'} mb-4`}>
+                  <div>
+                    {runResult.success ? (
+                      <div>
+                        <h4 className="font-bold">✅ All test cases passed!</h4>
+                        <p className="text-sm mt-2">Runtime: {runResult.runtime+" sec"}</p>
+                        <p className="text-sm">Memory: {runResult.memory+" KB"}</p>
+                        
+                        <div className="mt-4 space-y-2">
+                          {runResult.testCases?.map((tc, i) => (
+                            <div key={i} className="bg-base-100 p-3 rounded text-xs">
+                              <div className="font-mono">
+                                <div><strong>Input:</strong> {tc.stdin}</div>
+                                <div><strong>Expected:</strong> {tc.expected_output}</div>
+                                <div><strong>Output:</strong> {tc.stdout}</div>
+                                <div className={'text-green-600'}>
+                                  {'✓ Passed'}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                  <div>
+                    <h4 className="font-bold text-red-500">❌ Compilation Error</h4>
+            <pre className="mt-3 bg-base-200 rounded-lg p-3 whitespace-pre-wrap text-red-500 overflow-x-auto">
+                {runResult.compileError ||
+                runResult.runtimeError ||
+                "Wrong Answer"}
+            </pre>
+                        <div className="mt-4 space-y-2">
+                          {runResult.testCases?.map((tc, i) => (
+                            <div key={i} className="bg-base-100 p-3 rounded text-xs">
+                              <div className="font-mono">
+                                <div><strong>Input:</strong> {tc.stdin}</div>
+                                <div><strong>Expected:</strong> {tc.expected_output}</div>
+                                <div><strong>Output:</strong> {tc.stdout}</div>
+                                <div className={tc.status_id==3 ? 'text-green-600' : 'text-red-600'}>
+                                  {tc.status_id==3 ? '✓ Passed' : '✗ Failed'}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+>>>>>>> 291ecfcc7d3e6c3d1cbd6f0d18a3b7cd6530858e
                   </div>
                 </div>
               </div>
             )}
 
+<<<<<<< HEAD
             {/* ── TEST RESULTS ── */}
             {activeRightTab === 'testcase' && (
               <div className="flex-1 overflow-y-auto">
@@ -333,6 +519,43 @@ const ProblemPage = () => {
               </div>
             )}
           </div>
+=======
+          {activeRightTab === 'result' && (
+            <div className="flex-1 p-4 overflow-y-auto">
+              <h3 className="font-semibold mb-4">Submission Result</h3>
+              {submitResult ? (
+                <div className={`alert ${submitResult.accepted ? 'alert-success' : 'alert-error'}`}>
+                  <div>
+                    {submitResult.accepted ? (
+                      <div>
+                        <h4 className="font-bold text-lg">🎉 Accepted</h4>
+                        <div className="mt-4 space-y-2">
+                          <p>Test Cases Passed: {submitResult.passedTestCases}/{submitResult.totalTestCases}</p>
+                          <p>Runtime: {submitResult.runtime + " sec"}</p>
+                          <p>Memory: {submitResult.memory + "KB"} </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <h4 className="font-bold text-lg text-red-500">❌ Failed</h4>
+                        <pre className="bg-base-200 rounded-lg p-3 mt-3 whitespace-pre-wrap text-red-500">
+                            {submitResult.error}
+                        </pre>
+                        <div className="mt-4 space-y-2">
+                          <p>Test Cases Passed: {submitResult.passedTestCases}/{submitResult.totalTestCases}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-gray-500">
+                  Click "Submit" to submit your solution for evaluation.
+                </div>
+              )}
+            </div>
+          )}
+>>>>>>> 291ecfcc7d3e6c3d1cbd6f0d18a3b7cd6530858e
         </div>
       </div>
     </div>
