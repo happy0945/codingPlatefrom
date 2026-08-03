@@ -13,11 +13,24 @@ const cors = require('cors')
 
 // console.log("Hello")
 
+const ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://localhost:3000",
+    "https://coding-platefrom.vercel.app",
+];
+
 app.use(cors({
-    origin : "https://coding-platefrom.vercel.app",
+    origin: (origin, callback) => {
+        // Allow requests with no origin (Postman, curl, mobile apps)
+        if (!origin) return callback(null, true);
+        if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+        callback(new Error(`CORS: origin ${origin} not allowed`));
+    },
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
 }))
+
 
 app.use(express.json());
 app.use(cookieParser());

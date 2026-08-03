@@ -1,8 +1,8 @@
 import axios from "axios";
 
-// Production API URL — resolves merge conflict between localhost and render.com
-// Using production URL so the app works both locally (via proxy) and on render
-const BASE_URL = import.meta.env.VITE_API_URL || "https://codingplatefrom.onrender.com";
+// Local dev  → set VITE_API_URL=http://localhost:5000 in .env
+// Production → falls back to the Render backend URL
+const BASE_URL = import.meta.env.VITE_API_URL ?? "https://codingplatefrom.onrender.com";
 
 const axiosClient = axios.create({
   baseURL: BASE_URL,
