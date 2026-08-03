@@ -5,18 +5,150 @@ import { z } from 'zod';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, NavLink } from 'react-router';
 import { registerUser } from '../authSlice';
+import useTheme from '../hooks/useTheme';
 
 const signupSchema = z.object({
-  firstName: z.string().min(3, "Minimum character should be 3"),
-  emailId: z.string().email("Invalid Email"),
-  password: z.string().min(8, "Password is too weak")
+  firstName: z.string().min(3, "Name must be at least 3 characters"),
+  emailId: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
 });
+
+// Animated lines for left panel
+const demoLines = [
+  { code: 'function maxProfit(prices) {', color: '#6366f1' },
+  { code: '  let maxP = 0, minP = Infinity;', color: '#8b5cf6' },
+  { code: '  for (const price of prices) {', color: '#c084fc' },
+  { code: '    minP = Math.min(minP, price);', color: '#06b6d4' },
+  { code: '    maxP = Math.max(maxP,', color: '#22d3ee' },
+  { code: '             price - minP);', color: '#34d399' },
+  { code: '  }', color: '#a78bfa' },
+  { code: '  return maxP;', color: '#f472b6' },
+  { code: '}', color: '#6366f1' },
+];
+
+function LeftPanel() {
+  const [visible, setVisible] = useState(0);
+
+  useEffect(() => {
+    if (visible >= demoLines.length) {
+      const t = setTimeout(() => setVisible(0), 2500);
+      return () => clearTimeout(t);
+    }
+    const t = setTimeout(() => setVisible(v => v + 1), 220);
+    return () => clearTimeout(t);
+  }, [visible]);
+
+  return (
+    <div className="hidden md:flex flex-col justify-center relative overflow-hidden" style={{
+      background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 60%, #24243e 100%)',
+      minHeight: '100vh',
+    }}>
+      <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/3 left-1/4 w-48 h-48 bg-cyan-600/20 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="relative px-10 py-16 text-white">
+        {/* Logo */}
+        <NavLink to="/" className="flex items-center gap-2 mb-16">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg shadow-lg"
+            style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}>
+            &lt;/&gt;
+          </div>
+          <span className="text-xl font-extrabold" style={{
+            background: 'linear-gradient(135deg, #6366f1, #06b6d4)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}>
+            CodeArena
+          </span>
+        </NavLink>
+
+        <h2 className="text-3xl font-extrabold mb-3 leading-snug">
+          Join thousands of<br />
+          <span style={{
+            background: 'linear-gradient(135deg, #8b5cf6, #06b6d4)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}>coders today! 💻</span>
+        </h2>
+        <p className="text-sm opacity-60 mb-10">
+          Best Time to Buy and Sell Stock — a classic greedy problem.
+        </p>
+
+        {/* Animated code */}
+        <div className="rounded-2xl p-5 font-mono text-sm leading-7"
+          style={{
+            background: 'rgba(255,255,255,0.04)',
+            border: '1px solid rgba(139,92,246,0.25)',
+            backdropFilter: 'blur(10px)',
+          }}>
+          <div className="flex items-center gap-1.5 mb-3">
+            <span className="w-2.5 h-2.5 rounded-full bg-red-500 opacity-80" />
+            <span className="w-2.5 h-2.5 rounded-full bg-yellow-500 opacity-80" />
+            <span className="w-2.5 h-2.5 rounded-full bg-green-500 opacity-80" />
+            <span className="ml-2 text-xs opacity-30">maxProfit.js</span>
+          </div>
+          {demoLines.map((line, i) => (
+            <div key={i} style={{
+              color: line.color,
+              opacity: i < visible ? 1 : 0,
+              transform: i < visible ? 'translateX(0)' : 'translateX(-6px)',
+              transition: 'opacity 0.2s, transform 0.2s',
+            }}>
+              <span className="mr-3 text-xs opacity-25">{String(i + 1).padStart(2, '0')}</span>
+              {line.code}
+            </div>
+          ))}
+          {visible < demoLines.length && (
+            <span className="inline-block w-2 h-4 bg-purple-400 animate-blink ml-8" />
+          )}
+        </div>
+
+        {/* Stats pills */}
+        <div className="grid grid-cols-3 gap-3 mt-8">
+          {[['200+', 'Problems'], ['AI', 'Hints'], ['0₹', 'Free']].map(([val, label]) => (
+            <div key={label} className="text-center rounded-xl py-3"
+              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+              <div className="text-lg font-extrabold" style={{
+                background: 'linear-gradient(135deg, #a78bfa, #06b6d4)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}>{val}</div>
+              <div className="text-xs opacity-50">{label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ThemeToggle({ isDark, toggleTheme }) {
+  return (
+    <button
+      onClick={toggleTheme}
+      className="flex items-center justify-center w-9 h-9 rounded-full border hover:scale-110 transition-all"
+      style={{ borderColor: isDark ? 'rgba(99,102,241,0.4)' : 'rgba(99,102,241,0.3)' }}
+      aria-label="Toggle theme"
+    >
+      {isDark ? (
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 110 10A5 5 0 0112 7z" />
+        </svg>
+      ) : (
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+        </svg>
+      )}
+    </button>
+  );
+}
 
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isAuthenticated, loading } = useSelector((state) => state.auth); // Removed error as it wasn't used
+  const { isAuthenticated, loading, error } = useSelector((state) => state.auth);
+  const { isDark, toggleTheme } = useTheme();
 
   const {
     register,
@@ -25,9 +157,7 @@ function Signup() {
   } = useForm({ resolver: zodResolver(signupSchema) });
 
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/');
-    }
+    if (isAuthenticated) navigate('/home');
   }, [isAuthenticated, navigate]);
 
   const onSubmit = (data) => {
@@ -35,61 +165,98 @@ function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-base-200"> {/* Added a light bg for contrast */}
-      <div className="card w-96 bg-base-100 shadow-xl">
-        <div className="card-body">
-          <h2 className="card-title justify-center text-3xl mb-6">Coding Platform</h2> {/* Added mb-6 for spacing */}
-          <form onSubmit={handleSubmit(onSubmit)}>
-            {/* First Name Field */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">First Name</span>
-              </label>
+    <div className="min-h-screen grid md:grid-cols-2">
+      {/* Left panel */}
+      <LeftPanel />
+
+      {/* Right: Signup form */}
+      <div className="flex flex-col justify-center items-center px-8 py-12 bg-base-100 min-h-screen relative">
+        {/* Theme toggle */}
+        <div className="absolute top-5 right-5">
+          <ThemeToggle isDark={isDark} toggleTheme={toggleTheme} />
+        </div>
+
+        <div className="w-full max-w-sm animate-slideUp">
+          {/* Mobile logo */}
+          <NavLink to="/" className="flex md:hidden items-center gap-2 mb-8 justify-center">
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center font-bold text-sm text-white"
+              style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}>
+              &lt;/&gt;
+            </div>
+            <span className="text-lg font-extrabold">
+              Code<span style={{
+                background: 'linear-gradient(135deg, #6366f1, #06b6d4)',
+                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+              }}>Arena</span>
+            </span>
+          </NavLink>
+
+          <div className="mb-8">
+            <h1 className="text-3xl font-extrabold mb-2">Create account</h1>
+            <p className="text-sm opacity-50">Start your DSA journey — it's completely free.</p>
+          </div>
+
+          {/* Global error */}
+          {error && (
+            <div className="alert alert-error mb-6 py-3 text-sm animate-fadeIn">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <span>{typeof error === 'string' ? error : 'Registration failed. Please try again.'}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {/* First Name */}
+            <div>
+              <label className="block text-sm font-semibold mb-2">First Name</label>
               <input
+                id="signup-name"
                 type="text"
                 placeholder="John"
-                className={`input input-bordered w-full ${errors.firstName ? 'input-error' : ''}`} 
+                className={`input input-bordered w-full transition-all focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${errors.firstName ? 'input-error' : ''}`}
                 {...register('firstName')}
               />
               {errors.firstName && (
-                <span className="text-error text-sm mt-1">{errors.firstName.message}</span>
+                <p className="text-error text-xs mt-1.5 flex items-center gap-1">
+                  <span>⚠</span> {errors.firstName.message}
+                </p>
               )}
             </div>
 
-            {/* Email Field */}
-            <div className="form-control mt-4">
-              <label className="label">
-                <span className="label-text">Email</span>
-              </label>
+            {/* Email */}
+            <div>
+              <label className="block text-sm font-semibold mb-2">Email</label>
               <input
+                id="signup-email"
                 type="email"
                 placeholder="john@example.com"
-                className={`input input-bordered w-full ${errors.emailId ? 'input-error' : ''}`} // Ensure w-full for consistency
+                className={`input input-bordered w-full transition-all focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${errors.emailId ? 'input-error' : ''}`}
                 {...register('emailId')}
               />
               {errors.emailId && (
-                <span className="text-error text-sm mt-1">{errors.emailId.message}</span>
+                <p className="text-error text-xs mt-1.5 flex items-center gap-1">
+                  <span>⚠</span> {errors.emailId.message}
+                </p>
               )}
             </div>
 
-            {/* Password Field with Toggle */}
-            <div className="form-control mt-4">
-              <label className="label">
-                <span className="label-text">Password</span>
-              </label>
+            {/* Password */}
+            <div>
+              <label className="block text-sm font-semibold mb-2">Password</label>
               <div className="relative">
                 <input
+                  id="signup-password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  // Added pr-10 (padding-right) to make space for the button
-                  className={`input input-bordered w-full pr-10 ${errors.password ? 'input-error' : ''}`}
+                  placeholder="Min. 8 characters"
+                  className={`input input-bordered w-full pr-11 transition-all focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${errors.password ? 'input-error' : ''}`}
                   {...register('password')}
                 />
                 <button
                   type="button"
-                  className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700" // Added transform for better centering, styling
+                  className="absolute top-1/2 right-3 -translate-y-1/2 opacity-50 hover:opacity-100 transition-opacity"
                   onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? "Hide password" : "Show password"} // Accessibility
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -104,31 +271,41 @@ function Signup() {
                 </button>
               </div>
               {errors.password && (
-                <span className="text-error text-sm mt-1">{errors.password.message}</span>
+                <p className="text-error text-xs mt-1.5 flex items-center gap-1">
+                  <span>⚠</span> {errors.password.message}
+                </p>
               )}
             </div>
 
-            {/* Submit Button */}
-            <div className="form-control mt-8 flex justify-center"> 
-              <button
-                type="submit"
-                className={`btn btn-primary ${loading ? 'loading' : ''}`}
-                disabled={loading}
-              >
-                {loading ? 'Signing Up...' : 'Sign Up'}
-              </button>
-            </div>
+            {/* Submit */}
+            <button
+              id="signup-submit"
+              type="submit"
+              disabled={loading}
+              className="btn w-full font-bold text-white border-0 shadow-lg hover:opacity-90 transition-opacity mt-2"
+              style={{ background: 'linear-gradient(135deg, #8b5cf6, #06b6d4)' }}
+            >
+              {loading ? (
+                <>
+                  <span className="loading loading-spinner loading-sm" />
+                  Creating account...
+                </>
+              ) : 'Create Account →'}
+            </button>
           </form>
 
-          {/* Login Redirect */}
-          <div className="text-center mt-6"> {/* Increased mt for spacing */}
-            <span className="text-sm">
-              Already have an account?{' '}
-              <NavLink to="/login" className="link link-primary">
-                Login
-              </NavLink>
-            </span>
-          </div>
+          <div className="divider text-xs opacity-40 my-6">OR</div>
+
+          <p className="text-center text-sm">
+            Already have an account?{' '}
+            <NavLink to="/login" className="font-semibold text-indigo-500 hover:text-indigo-400 transition-colors">
+              Sign in →
+            </NavLink>
+          </p>
+
+          <p className="text-center mt-4 text-xs opacity-40">
+            <NavLink to="/" className="hover:opacity-70 transition-opacity">← Back to home</NavLink>
+          </p>
         </div>
       </div>
     </div>
