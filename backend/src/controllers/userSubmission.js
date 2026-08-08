@@ -1,212 +1,190 @@
-const Problem = require("../models/problem");
-const Submission = require("../models/submission");
-const User = require("../models/user");
-const {getLanguageById,submitBatch,submitToken} = require("../utils/problemUtility");
+const Problem = require('../models/problem');
+const Submission = require('../models/submission');
+const User = require('../models/user');
+const { submissionQueue, runQueue } = require('../config/queue');
+const redisClient = require('../config/redis');
 
+// Enqueue Official Code Submission into BullMQ
 const submitCode = async (req, res) => {
   try {
     const userId = req.result._id;
     const problemId = req.params.id;
-
     let { code, language } = req.body;
 
     if (!userId || !problemId || !code || !language) {
       return res.status(400).json({
         success: false,
-        message: "Some required fields are missing.",
+        message: 'Some required fields are missing.',
       });
     }
 
-    if (language === "cpp") {
-      language = "c++";
+    if (language === 'cpp') {
+      language = 'c++';
     }
 
     const problem = await Problem.findById(problemId);
-
     if (!problem) {
       return res.status(404).json({
         success: false,
-        message: "Problem not found.",
+        message: 'Problem not found.',
       });
     }
 
-    // Create submission with pending status
+    // Create submission record with pending status
     const submittedResult = await Submission.create({
       userId,
       problemId,
       code,
       language,
-      status: "pending",
+      status: 'pending',
       testCasesTotal: problem.hiddenTestCases.length,
     });
 
-    const languageId = getLanguageById(language);
+    // Enqueue job to BullMQ submissionQueue and pass to the worker
+    await submissionQueue.add('submitJob', {
+      submissionId: submittedResult._id.toString(),
+      userId: userId.toString(),
+      problemId: problemId.toString(),
+      code,
+      language,
+      hiddenTestCases: problem.hiddenTestCases,
+    });
 
-    const submissions = problem.hiddenTestCases.map((testcase) => ({
-      source_code: code,
-      language_id: languageId,
-      stdin: testcase.input,
-      expected_output: testcase.output,
-    }));
-
-    const submitResponse = await submitBatch(submissions);
-
-    const tokens = submitResponse.map((item) => item.token);
-
-    const testResult = await submitToken(tokens);
-
-    let testCasesPassed = 0;
-    let runtime = 0;
-    let memory = 0;
-
-    let status = "accepted";
-    let errorMessage = null;
-
-    for (const test of testResult) {
-      if (test.status_id === 3) {
-        testCasesPassed++;
-        runtime += Number(test.time || 0);
-        memory = Math.max(memory, Number(test.memory || 0));
-      } else {
-        status = "error";
-
-        errorMessage =
-          test.compile_output ||
-          test.stderr ||
-          test.message ||
-          test.status?.description ||
-          "Wrong Answer";
-      }
-    }
-
-    // Save submission result
-    submittedResult.status = status;
-    submittedResult.testCasesPassed = testCasesPassed;
-    submittedResult.runtime = runtime;
-    submittedResult.memory = memory;
-    submittedResult.errorMessage = errorMessage;
-
-    await submittedResult.save();
-
-    // Add problem to solved list only if accepted
-    if (
-      status === "accepted" &&
-      !req.result.problemSolved.some(
-        (id) => id.toString() === problemId.toString()
-      )
-    ) {
-      req.result.problemSolved.push(problemId);
-      await req.result.save();
-    }
-
-    return res.status(200).json({
+    return res.status(202).json({
       success: true,
-      accepted: status === "accepted",
-      status,
-      totalTestCases: submittedResult.testCasesTotal,
-      passedTestCases: testCasesPassed,
-      runtime,
-      memory,
-      error: errorMessage,
-      results: testResult,
+      submissionId: submittedResult._id,
+      status: 'pending',
+      message: 'Submission queued successfully.',
     });
   } catch (err) {
-    console.error("Submit Error:", err);
-
+    console.error('Submit Queue Error:', err);
     return res.status(500).json({
       success: false,
-      message: "Internal Server Error",
+      message: 'Internal Server Error',
       error: err.message,
     });
   }
 };
 
+// Poll official submission status from MongoDB
+const getSubmissionStatus = async (req, res) => {
+  try {
+    const { submissionId } = req.params;
+    const submission = await Submission.findById(submissionId);
+
+    if (!submission) {
+      return res.status(404).json({
+        success: false,
+        message: 'Submission not found.',
+      });
+    }
+
+    if (submission.status === 'pending') {
+      return res.status(200).json({
+        completed: false,
+        status: 'pending',
+      });
+    }
+
+    return res.status(200).json({
+      completed: true,
+      success: submission.status === 'accepted',
+      accepted: submission.status === 'accepted',
+      status: submission.status,
+      totalTestCases: submission.testCasesTotal,
+      passedTestCases: submission.testCasesPassed,
+      runtime: submission.runtime,
+      memory: submission.memory,
+      error: submission.errorMessage,
+    });
+  } catch (err) {
+    console.error('Get Submission Status Error:', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal Server Error',
+      error: err.message,
+    });
+  }
+};
+
+// Enqueue Code Run (Test visible testcases) into BullMQ
 const runCode = async (req, res) => {
   try {
     const userId = req.result._id;
     const problemId = req.params.id;
-
     let { code, language } = req.body;
 
     if (!userId || !problemId || !code || !language) {
       return res.status(400).json({
         success: false,
-        message: "Missing required fields",
+        message: 'Missing required fields',
       });
     }
 
-    if (language === "cpp") language = "c++";
+    if (language === 'cpp') language = 'c++';
 
     const problem = await Problem.findById(problemId);
-
     if (!problem) {
       return res.status(404).json({
         success: false,
-        message: "Problem not found",
+        message: 'Problem not found',
       });
     }
 
-    const languageId = getLanguageById(language);
+    const jobId = `run_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
 
-    const submissions = problem.visibleTestCases.map((testcase) => ({
-      source_code: code,
-      language_id: languageId,
-      stdin: testcase.input,
-      expected_output: testcase.output,
-    }));
+    // Enqueue job to BullMQ runQueue
+    await runQueue.add('runJob', {
+      jobId,
+      code,
+      language,
+      visibleTestCases: problem.visibleTestCases,
+    });
 
-    const submitResponse = await submitBatch(submissions);
-
-    const tokens = submitResponse.map((item) => item.token);
-
-    const results = await submitToken(tokens);
-
-    let passed = 0;
-    let runtime = 0;
-    let memory = 0;
-
-    let compileError = null;
-    let runtimeError = null;
-    let wrongAnswer = false;
-
-    for (const test of results) {
-      if (test.status_id === 3) {
-        passed++;
-        runtime += Number(test.time || 0);
-        memory = Math.max(memory, Number(test.memory || 0));
-      } else {
-        if (test.compile_output) {
-          compileError = test.compile_output;
-        } else if (test.stderr) {
-          runtimeError = test.stderr;
-        } else {
-          wrongAnswer = true;
-        }
-      }
-    }
-
-    return res.status(200).json({
-      success: passed === results.length,
-      totalTestCases: results.length,
-      passedTestCases: passed,
-      runtime,
-      memory,
-      compileError,
-      runtimeError,
-      wrongAnswer,
-      testCases: results,
+    return res.status(202).json({
+      success: true,
+      jobId,
+      status: 'pending',
+      message: 'Run queued successfully.',
     });
   } catch (err) {
-    console.error(err);
-
+    console.error('Run Queue Error:', err);
     return res.status(500).json({
       success: false,
-      message: "Internal Server Error",
+      message: 'Internal Server Error',
       error: err.message,
     });
   }
 };
 
+// Poll Code Run status from Redis
+const getRunStatus = async (req, res) => {
+  try {
+    const { jobId } = req.params;
+    const cachedData = await redisClient.get(`runResult:${jobId}`);
 
-module.exports = {submitCode,runCode};
+    if (!cachedData) {
+      return res.status(200).json({
+        completed: false,
+        status: 'pending',
+      });
+    }
 
+    const result = JSON.parse(cachedData);
+    return res.status(200).json(result);
+  } catch (err) {
+    console.error('Get Run Status Error:', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal Server Error',
+      error: err.message,
+    });
+  }
+};
+
+module.exports = {
+  submitCode,
+  getSubmissionStatus,
+  runCode,
+  getRunStatus,
+};
