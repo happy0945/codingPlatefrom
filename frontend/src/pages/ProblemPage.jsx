@@ -90,41 +90,60 @@ const ProblemPage = () => {
     setLeftWidth(Math.min(Math.max(pct, 25), 75));
   };
 
+  const pollUntilComplete = async (url, intervalMs = 1000, maxAttempts = 30) => {
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      const { data } = await axiosClient.get(url);
+      if (data && data.completed) {
+        return data;
+      }
+      await new Promise((resolve) => setTimeout(resolve, intervalMs));
+    }
+    throw new Error('Execution timed out. Please try again.');
+  };
+
   const handleRun = async () => {
     setLoading(true);
     setRunResult(null);
+    setActiveRightTab('testcase');
     try {
       const { data } = await axiosClient.post(`/submission/run/${problemId}`, {
         code, language: selectedLanguage
       });
-      setRunResult(data);
-      setActiveRightTab('testcase');
+      if (data.jobId) {
+        const finalResult = await pollUntilComplete(`/submission/run-status/${data.jobId}`);
+        setRunResult(finalResult);
+      } else {
+        setRunResult(data);
+      }
     } catch (err) {
       setRunResult({
         success: false,
         error: err.response?.data?.error || err.message || 'Compilation Error',
         testCases: []
       });
-      setActiveRightTab('testcase');
     } finally { setLoading(false); }
   };
 
   const handleSubmitCode = async () => {
     setLoading(true);
     setSubmitResult(null);
+    setActiveRightTab('result');
     try {
       const { data } = await axiosClient.post(`/submission/submit/${problemId}`, {
         code, language: selectedLanguage
       });
-      setSubmitResult(data);
-      setActiveRightTab('result');
+      if (data.submissionId) {
+        const finalResult = await pollUntilComplete(`/submission/status/${data.submissionId}`);
+        setSubmitResult(finalResult);
+      } else {
+        setSubmitResult(data);
+      }
     } catch (err) {
       setSubmitResult({
         accepted: false,
         error: err.response?.data?.error || err.message || 'Compilation Error',
         passedTestCases: 0, totalTestCases: 0, runtime: 0, memory: 0
       });
-      setActiveRightTab('result');
     } finally { setLoading(false); }
   };
 
