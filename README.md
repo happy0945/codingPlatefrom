@@ -130,8 +130,8 @@ VITE_API_URL=http://localhost:5000
 
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/your-username/CodeArena.git
-cd CodeArena
+git clone https://github.com/happy0945/codingPlateform.git
+cd Coding Plateform
 ```
 
 ### 2️⃣ Install Dependencies
@@ -191,6 +191,4 @@ Contributions, issues, and feature requests are welcome! Feel free to check the 
 
 ---
 
-## 📜 License
 
-This project is licensed under the ISC License.
