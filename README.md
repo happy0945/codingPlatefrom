@@ -162,7 +162,12 @@ cd frontend
 npm run dev
 ```
 
-Visit `http://localhost:5173` in your browser! 🚀
+### 4️⃣ Run Unit Tests (Jest)
+
+```bash
+cd backend
+npm test
+```
 
 ---
 
