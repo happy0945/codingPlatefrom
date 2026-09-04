@@ -16,6 +16,7 @@ import AdminDelete from "./components/AdminDelete";
 import AdminUpload from "./components/AdminUpload";
 import AdminUpdate from "./components/AdminUpdate";
 import AdminUpdateList from "./components/AdminUpdateList";
+import ProfilePage from "./pages/ProfilePage";
 import useTheme from "./hooks/useTheme";
 
 function App() {
@@ -96,6 +97,12 @@ function App() {
 
         {/* Public algorithm visualizer */}
         <Route path="/algorithms" element={<AlgorithmPage />} />
+
+        {/* User profile — protected */}
+        <Route
+          path="/profile"
+          element={isAuthenticated ? <ProfilePage /> : <Navigate to="/login" />}
+        />
 
         {/* Public blog — no auth needed */}
         <Route path="/blog" element={<BlogListPage />} />

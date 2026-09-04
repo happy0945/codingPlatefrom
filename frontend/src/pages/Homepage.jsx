@@ -140,7 +140,7 @@ function Homepage() {
           <div className="hidden lg:flex items-center gap-6 text-sm font-medium">
             <NavLink to="/home" className="opacity-70 hover:opacity-100 transition-opacity">Problems</NavLink>
             <NavLink to="/algorithms" className="opacity-70 hover:opacity-100 transition-opacity">Visualizer</NavLink>
-            <NavLink to="/" className="opacity-70 hover:opacity-100 transition-opacity">Blog</NavLink>
+            <NavLink to="/blog" className="opacity-70 hover:opacity-100 transition-opacity">Blog</NavLink>
           </div>
 
           {/* Right actions */}
@@ -172,6 +172,14 @@ function Homepage() {
                     </NavLink>
                   </li>
                 )}
+                <li>
+                  <NavLink to="/profile" className="flex items-center gap-2 font-medium">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    My Profile
+                  </NavLink>
+                </li>
                 <li>
                   <button onClick={handleLogout} className="flex items-center gap-2 text-error hover:bg-error/10">
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

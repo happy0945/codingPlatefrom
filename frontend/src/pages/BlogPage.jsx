@@ -256,6 +256,155 @@ function fibMemo(n, memo = {}) {
 }`,
         lang: 'javascript',
       },
+      {
+        heading: 'Cycle Detection with Union-Find',
+        body: `Union-Find (Disjoint Set Union) is the fastest way to detect cycles in undirected graphs. Find the root of each node; if two nodes share a root before union, a cycle exists.`,
+        code: `class UnionFind {
+  constructor(n) { this.parent = Array.from({length:n},(_,i)=>i); }
+  find(x) { return this.parent[x]===x ? x : (this.parent[x]=this.find(this.parent[x])); }
+  union(x, y) {
+    const px=this.find(x), py=this.find(y);
+    if(px===py) return false; // cycle!
+    this.parent[px]=py;
+    return true;
+  }
+}`,
+        lang: 'javascript',
+      },
+    ],
+  },
+  {
+    slug: 'stack-and-queue',
+    tag: 'Stack & Queue',
+    tagColor: '#a78bfa',
+    title: 'Stack & Queue: Monotonic Patterns',
+    time: '7 min read',
+    icon: '📚',
+    topics: ['Stack', 'Queue', 'Monotonic Stack', 'Next Greater Element'],
+    excerpt: 'Stacks and queues power some of the most elegant patterns in DSA. Learn monotonic stacks, implement queue with stacks, and solve sliding window max.',
+    content: [
+      {
+        heading: 'Stack Basics & Monotonic Stack',
+        body: `A monotonic stack maintains elements in sorted order (increasing or decreasing). When you push a new element, pop everything that violates the invariant.\n\nPerfect for: Next Greater Element, Largest Rectangle in Histogram, Daily Temperatures.`,
+        code: `// Next Greater Element to the right
+function nextGreater(arr) {
+  const result = new Array(arr.length).fill(-1);
+  const stack = []; // stores indices
+  for (let i = 0; i < arr.length; i++) {
+    while (stack.length && arr[stack.at(-1)] < arr[i]) {
+      result[stack.pop()] = arr[i];
+    }
+    stack.push(i);
+  }
+  return result;
+}`,
+        lang: 'javascript',
+      },
+      {
+        heading: 'Implement Queue using Two Stacks',
+        body: `A classic interview problem. Use two stacks: one for push (inbox), one for pop (outbox). When outbox is empty, pour all of inbox into it — amortized O(1) per operation.`,
+        code: `class MyQueue {
+  constructor() { this.inbox = []; this.outbox = []; }
+  push(val) { this.inbox.push(val); }
+  pop() {
+    if (!this.outbox.length)
+      while (this.inbox.length) this.outbox.push(this.inbox.pop());
+    return this.outbox.pop();
+  }
+  peek() {
+    if (!this.outbox.length)
+      while (this.inbox.length) this.outbox.push(this.inbox.pop());
+    return this.outbox.at(-1);
+  }
+  empty() { return !this.inbox.length && !this.outbox.length; }
+}`,
+        lang: 'javascript',
+      },
+      {
+        heading: 'Sliding Window Maximum',
+        body: `Find the maximum in every window of size k. Use a deque to maintain a decreasing monotonic queue of indices. O(n) total.`,
+        code: `function maxSlidingWindow(nums, k) {
+  const result = [];
+  const deque = []; // stores indices, front = max
+  for (let i = 0; i < nums.length; i++) {
+    // Remove indices outside window
+    while (deque.length && deque[0] < i - k + 1) deque.shift();
+    // Remove smaller elements from back
+    while (deque.length && nums[deque.at(-1)] < nums[i]) deque.pop();
+    deque.push(i);
+    if (i >= k - 1) result.push(nums[deque[0]]);
+  }
+  return result;
+}`,
+        lang: 'javascript',
+      },
+    ],
+  },
+  {
+    slug: 'trees-and-bst',
+    tag: 'Trees',
+    tagColor: '#34d399',
+    title: 'Trees & BSTs: Traversal, LCA & More',
+    time: '9 min read',
+    icon: '🌳',
+    topics: ['DFS', 'BFS', 'Level Order', 'LCA', 'BST'],
+    excerpt: 'From inorder traversal to lowest common ancestor — master every tree pattern used in interviews with clear examples and O(n) solutions.',
+    content: [
+      {
+        heading: 'Tree Traversals (DFS)',
+        body: `Three DFS orderings: Inorder (Left → Root → Right), Preorder (Root → Left → Right), Postorder (Left → Right → Root).\n\nFor a BST, inorder always gives a sorted sequence.`,
+        code: `function inorder(root, result = []) {
+  if (!root) return result;
+  inorder(root.left, result);
+  result.push(root.val);
+  inorder(root.right, result);
+  return result;
+}
+
+function preorder(root, result = []) {
+  if (!root) return result;
+  result.push(root.val);
+  preorder(root.left, result);
+  preorder(root.right, result);
+  return result;
+}`,
+        lang: 'javascript',
+      },
+      {
+        heading: 'Level Order Traversal (BFS)',
+        body: `Use a queue. Each iteration processes one full level. Track level size to group nodes per level.`,
+        code: `function levelOrder(root) {
+  if (!root) return [];
+  const result = [];
+  const queue = [root];
+  while (queue.length) {
+    const level = [];
+    const size = queue.length;
+    for (let i = 0; i < size; i++) {
+      const node = queue.shift();
+      level.push(node.val);
+      if (node.left)  queue.push(node.left);
+      if (node.right) queue.push(node.right);
+    }
+    result.push(level);
+  }
+  return result;
+}`,
+        lang: 'javascript',
+      },
+      {
+        heading: 'Lowest Common Ancestor (LCA)',
+        body: `LCA of nodes p and q is the deepest node that has both as descendants. Classic recursive solution: if current node is p or q, return it. Otherwise merge answers from left and right subtrees.`,
+        code: `function lowestCommonAncestor(root, p, q) {
+  if (!root || root === p || root === q) return root;
+  const left  = lowestCommonAncestor(root.left,  p, q);
+  const right = lowestCommonAncestor(root.right, p, q);
+  // If both sides return non-null, root is LCA
+  if (left && right) return root;
+  return left || right;
+}`,
+        lang: 'javascript',
+      },
     ],
   },
 ];
