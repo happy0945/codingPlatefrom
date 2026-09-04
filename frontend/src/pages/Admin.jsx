@@ -47,8 +47,8 @@ function Admin() {
       <div className="max-w-6xl mx-auto px-6 py-10">
         {/* Header */}
         <div className="mb-10 animate-slideUp">
-          <h1 className="text-4xl font-extrabold mb-2">
-            Admin <span style={{ background:'linear-gradient(135deg,#6366f1,#06b6d4)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>Dashboard</span>
+          <h1 className="text-4xl font-black tracking-tight mb-2">
+            Admin <span style={{ color: '#1D4ED8' }}>Dashboard</span>
           </h1>
           <p className="opacity-50 text-sm">Manage your coding platform — problems, videos, and more.</p>
         </div>
@@ -56,8 +56,8 @@ function Admin() {
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-10">
           {[['200+','Problems'],['4','Admin Tools'],['🟢 Online','Platform']].map(([v,l],i) => (
-            <div key={l} className="bg-base-100 rounded-2xl p-4 border border-base-300 text-center animate-slideUp" style={{ animationDelay:`${i*0.1}s`, animationFillMode:'both' }}>
-              <div className="text-2xl font-extrabold" style={{ background:'linear-gradient(135deg,#6366f1,#06b6d4)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>{v}</div>
+            <div key={l} className="card-clean p-4 text-center animate-slideUp" style={{ animationDelay:`${i*0.1}s`, animationFillMode:'both' }}>
+              <div className="text-2xl font-extrabold" style={{ color: '#1D4ED8' }}>{v}</div>
               <div className="text-xs opacity-50 mt-0.5">{l}</div>
             </div>
           ))}

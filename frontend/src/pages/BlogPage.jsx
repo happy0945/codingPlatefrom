@@ -413,12 +413,14 @@ function preorder(root, result = []) {
 function ThemeToggle({ isDark, toggleTheme }) {
   return (
     <button onClick={toggleTheme}
-      className="flex items-center justify-center w-9 h-9 rounded-full border transition-all hover:scale-110"
-      style={{ borderColor: isDark ? 'rgba(99,102,241,0.4)' : 'rgba(99,102,241,0.3)' }}
+      className="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-medium transition-all"
+      style={{ borderColor: '#E5E7EB', background: isDark ? '#1C1C1C' : '#F9FAFB' }}
       aria-label="Toggle theme">
-      {isDark
-        ? <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 110 10A5 5 0 0112 7z" /></svg>
-        : <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-indigo-600" fill="currentColor" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" /></svg>}
+      {isDark ? (
+        <><svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 110 10A5 5 0 0112 7z" /></svg></>
+      ) : (
+        <><svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" style={{ color: '#64748B' }}><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" /></svg></>
+      )}
     </button>
   );
 }
@@ -432,17 +434,17 @@ function CodeBlock({ code, lang }) {
     setTimeout(() => setCopied(false), 1500);
   };
   return (
-    <div className="relative rounded-xl overflow-hidden my-4" style={{ border: '1px solid rgba(99,102,241,0.25)' }}>
-      <div className="flex items-center justify-between px-4 py-2" style={{ background: '#1a1a2e' }}>
+    <div className="relative rounded-xl overflow-hidden my-4 code-surface border-0">
+      <div className="flex items-center justify-between px-4 py-2" style={{ background: '#1E293B' }}>
         <div className="flex items-center gap-1.5">
           {['#ef4444','#eab308','#22c55e'].map(c => <div key={c} className="w-2.5 h-2.5 rounded-full opacity-80" style={{ background: c }} />)}
           <span className="text-xs opacity-40 ml-2 font-mono">{lang}</span>
         </div>
-        <button onClick={copy} className="text-xs opacity-50 hover:opacity-100 transition-opacity px-2 py-0.5 rounded">
+        <button onClick={copy} className="text-xs opacity-50 hover:opacity-100 transition-opacity px-2 py-0.5 rounded text-slate-300">
           {copied ? '✓ Copied' : 'Copy'}
         </button>
       </div>
-      <pre className="p-4 overflow-x-auto text-sm leading-6 font-mono" style={{ background: '#0d0d1a', color: '#a78bfa' }}>
+      <pre className="p-4 overflow-x-auto text-sm leading-6 font-mono" style={{ background: '#0F172A', color: '#93C5FD' }}>
         <code>{code}</code>
       </pre>
     </div>
@@ -456,45 +458,47 @@ export function BlogListPage() {
 
   return (
     <div className="min-h-screen bg-base-200">
-      <nav className="sticky top-0 z-40 bg-base-100/90 backdrop-blur-md border-b border-base-300">
-        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+      <nav className="sticky top-0 z-40 navbar-clean shadow-sm">
+        <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
           <NavLink to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm" style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)' }}>&lt;/&gt;</div>
-            <span className="font-extrabold text-lg">Code<span style={{ background:'linear-gradient(135deg,#6366f1,#06b6d4)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>Arena</span></span>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm" style={{ background: '#1D4ED8' }}>&lt;/&gt;</div>
+            <span className="font-extrabold text-lg tracking-tight">CodeArena</span>
           </NavLink>
           <div className="flex items-center gap-3">
             <ThemeToggle isDark={isDark} toggleTheme={toggleTheme} />
             {isAuthenticated
-              ? <NavLink to="/home" className="btn btn-sm font-semibold text-white border-0" style={{ background:'linear-gradient(135deg,#6366f1,#8b5cf6)' }}>Dashboard →</NavLink>
-              : <NavLink to="/login" className="btn btn-sm btn-ghost font-semibold">Login</NavLink>}
+              ? <NavLink to="/home" className="btn-blue px-4 py-2 rounded-lg text-sm">Dashboard →</NavLink>
+              : <NavLink to="/login" className="btn-outline-blue px-4 py-2 rounded-lg text-sm">Login</NavLink>}
           </div>
         </div>
       </nav>
 
       <div className="max-w-6xl mx-auto px-6 py-12">
-        <div className="text-center mb-12 animate-slideUp">
-          <span className="text-xs font-bold tracking-widest uppercase text-purple-500 mb-3 block">DSA Blog</span>
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
-            Learn the <span style={{ background:'linear-gradient(135deg,#6366f1,#06b6d4)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>Concepts</span>
+        <div className="mb-12 animate-slideUp">
+          <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: '#1D4ED8' }}>DSA Blog</p>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4">
+            Learn the Concepts.
           </h1>
-          <p className="opacity-60 max-w-xl mx-auto">Deep-dive articles on the most important DSA topics. No login required — read freely!</p>
+          <p className="max-w-xl" style={{ color: '#64748B' }}>Deep-dive articles on the most important DSA topics. No login required — read freely!</p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-2 gap-5">
           {BLOG_POSTS.map((post, i) => (
             <NavLink key={post.slug} to={`/blog/${post.slug}`}
-              className="card-hover rounded-2xl p-6 border block animate-slideUp"
-              style={{ animationDelay:`${i*0.08}s`, animationFillMode:'both', borderColor:`${post.tagColor}30`, background:`linear-gradient(135deg,${post.tagColor}08,transparent)` }}>
+              className="card-clean p-6 block animate-slideUp"
+              style={{ animationDelay:`${i*0.07}s`, animationFillMode:'both' }}>
               <div className="text-4xl mb-4">{post.icon}</div>
-              <span className="text-xs font-bold px-3 py-1 rounded-full mb-3 inline-block" style={{ background:`${post.tagColor}20`, color:post.tagColor }}>{post.tag}</span>
+              <span className="text-xs font-bold px-2.5 py-1 rounded-full mb-3 inline-block"
+                style={{ background: '#EFF6FF', color: '#1D4ED8' }}>{post.tag}</span>
               <h2 className="text-xl font-bold mb-2 leading-snug">{post.title}</h2>
-              <p className="text-sm opacity-60 leading-relaxed mb-4">{post.excerpt}</p>
+              <p className="text-sm leading-relaxed mb-4" style={{ color: '#64748B' }}>{post.excerpt}</p>
               <div className="flex flex-wrap gap-2 mb-4">
-                {post.topics.map(t => <span key={t} className="text-xs px-2 py-0.5 rounded-md" style={{ background:`${post.tagColor}15`, color:post.tagColor }}>{t}</span>)}
+                {post.topics.map(t => <span key={t} className="text-xs px-2 py-0.5 rounded-md"
+                  style={{ background: '#EFF6FF', color: '#1D4ED8' }}>{t}</span>)}
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="opacity-50">⏱ {post.time}</span>
-                <span className="font-semibold" style={{ color:post.tagColor }}>Read Article →</span>
+                <span style={{ color: '#94A3B8' }}>⏱ {post.time}</span>
+                <span className="font-semibold" style={{ color: '#1D4ED8' }}>Read Article →</span>
               </div>
             </NavLink>
           ))}
@@ -515,26 +519,26 @@ export function BlogDetailPage() {
     <div className="min-h-screen flex flex-col items-center justify-center gap-4">
       <div className="text-6xl">🔍</div>
       <p className="text-xl font-bold">Article not found</p>
-      <NavLink to="/blog" className="btn btn-sm" style={{ background:'linear-gradient(135deg,#6366f1,#8b5cf6)', color:'white', border:'none' }}>← Back to Blog</NavLink>
+      <NavLink to="/blog" className="btn-blue px-4 py-2 rounded-lg text-sm">← Back to Blog</NavLink>
     </div>
   );
 
   return (
     <div className="min-h-screen bg-base-200">
-      <nav className="sticky top-0 z-40 bg-base-100/90 backdrop-blur-md border-b border-base-300">
-        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+      <nav className="sticky top-0 z-40 navbar-clean shadow-sm">
+        <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <NavLink to="/blog" className="opacity-60 hover:opacity-100 text-sm flex items-center gap-1 transition-opacity">
+            <NavLink to="/blog" className="text-sm flex items-center gap-1 transition-colors hover:text-blue-700" style={{ color: '#64748B' }}>
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg> Blog
             </NavLink>
             <span className="opacity-20">/</span>
-            <span className="text-sm font-semibold opacity-70 truncate max-w-[200px]">{post.title}</span>
+            <span className="text-sm font-semibold truncate max-w-[200px]">{post.title}</span>
           </div>
           <div className="flex items-center gap-3">
             <ThemeToggle isDark={isDark} toggleTheme={toggleTheme} />
             {isAuthenticated
-              ? <NavLink to="/home" className="btn btn-sm font-semibold text-white border-0" style={{ background:'linear-gradient(135deg,#6366f1,#8b5cf6)' }}>Dashboard →</NavLink>
-              : <NavLink to="/login" className="btn btn-sm btn-ghost">Login</NavLink>}
+              ? <NavLink to="/home" className="btn-blue px-4 py-2 rounded-lg text-sm">Dashboard →</NavLink>
+              : <NavLink to="/login" className="btn-outline-blue px-4 py-2 rounded-lg text-sm">Login</NavLink>}
           </div>
         </div>
       </nav>
@@ -543,11 +547,13 @@ export function BlogDetailPage() {
         {/* Post header */}
         <div className="mb-10 animate-slideUp">
           <div className="text-5xl mb-4">{post.icon}</div>
-          <span className="text-xs font-bold px-3 py-1 rounded-full mb-4 inline-block" style={{ background:`${post.tagColor}20`, color:post.tagColor }}>{post.tag}</span>
-          <h1 className="text-4xl font-extrabold mt-3 mb-3 leading-tight">{post.title}</h1>
-          <div className="flex flex-wrap items-center gap-4 text-sm opacity-50">
+          <span className="text-xs font-bold px-2.5 py-1 rounded-full mb-4 inline-block"
+            style={{ background: '#EFF6FF', color: '#1D4ED8' }}>{post.tag}</span>
+          <h1 className="text-4xl font-black tracking-tight mt-3 mb-3 leading-tight">{post.title}</h1>
+          <div className="flex flex-wrap items-center gap-4 text-sm" style={{ color: '#94A3B8' }}>
             <span>⏱ {post.time}</span>
-            <div className="flex gap-2">{post.topics.map(t => <span key={t} className="px-2 py-0.5 rounded-md text-xs" style={{ background:`${post.tagColor}15`, color:post.tagColor }}>{t}</span>)}</div>
+            <div className="flex gap-2">{post.topics.map(t => <span key={t} className="px-2 py-0.5 rounded-md text-xs"
+              style={{ background: '#EFF6FF', color: '#1D4ED8' }}>{t}</span>)}</div>
           </div>
         </div>
 
@@ -555,21 +561,21 @@ export function BlogDetailPage() {
         <div className="space-y-10">
           {post.content.map((section, i) => (
             <div key={i} className="animate-slideUp" style={{ animationDelay:`${i*0.1}s`, animationFillMode:'both' }}>
-              <h2 className="text-2xl font-bold mb-3" style={{ color: post.tagColor }}>{section.heading}</h2>
-              <p className="text-base opacity-75 leading-relaxed whitespace-pre-line mb-2">{section.body}</p>
+              <h2 className="text-2xl font-bold mb-3" style={{ color: '#1D4ED8' }}>{section.heading}</h2>
+              <p className="text-base leading-relaxed whitespace-pre-line mb-2" style={{ color: '#374151' }}>{section.body}</p>
               {section.code && <CodeBlock code={section.code} lang={section.lang} />}
             </div>
           ))}
         </div>
 
         {/* Footer CTA */}
-        <div className="mt-16 rounded-2xl p-8 text-center border animate-slideUp" style={{ background:`${post.tagColor}08`, borderColor:`${post.tagColor}20` }}>
+        <div className="mt-16 rounded-2xl p-8 text-center card-clean animate-slideUp">
           <p className="font-bold text-lg mb-2">Ready to practice?</p>
-          <p className="text-sm opacity-60 mb-4">Solve {post.tag} problems on our platform</p>
+          <p className="text-sm mb-6" style={{ color: '#64748B' }}>Solve {post.tag} problems on our platform</p>
           <div className="flex gap-3 justify-center">
-            <NavLink to="/blog" className="btn btn-sm btn-ghost">← More Articles</NavLink>
+            <NavLink to="/blog" className="btn-outline-blue px-4 py-2 rounded-lg text-sm">← More Articles</NavLink>
             <NavLink to={isAuthenticated ? '/home' : '/signup'}
-              className="btn btn-sm text-white border-0" style={{ background:`linear-gradient(135deg,${post.tagColor},#8b5cf6)` }}>
+              className="btn-blue px-4 py-2 rounded-lg text-sm">
               {isAuthenticated ? 'Solve Problems →' : 'Sign Up Free →'}
             </NavLink>
           </div>

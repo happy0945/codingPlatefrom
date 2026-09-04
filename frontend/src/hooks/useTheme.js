@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 export function useTheme() {
   const [theme, setTheme] = useState(() => {
     // Read from localStorage first, fall back to 'dark'
-    return localStorage.getItem('cp-theme') || 'dark';
+    return localStorage.getItem('cp-theme') || 'light';
   });
 
   useEffect(() => {

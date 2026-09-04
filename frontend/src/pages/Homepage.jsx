@@ -103,21 +103,15 @@ function Homepage() {
     <div className="min-h-screen bg-base-200">
 
       {/* ── Top Navbar ────────────────────────────────────────── */}
-      <nav className="sticky top-0 z-40 bg-base-100/90 backdrop-blur-md border-b border-base-300 shadow-sm">
+      <nav className="sticky top-0 z-40 navbar-clean shadow-sm">
         <div className="max-w-7xl mx-auto px-5 py-3 flex items-center justify-between">
           {/* Logo */}
           <NavLink to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm shadow"
-              style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm shadow-sm"
+              style={{ background: '#1D4ED8' }}>
               &lt;/&gt;
             </div>
-            <span className="text-lg font-extrabold hidden sm:block">
-              Code<span style={{
-                background: 'linear-gradient(135deg, #6366f1, #06b6d4)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}>Arena</span>
-            </span>
+            <span className="text-lg font-extrabold tracking-tight hidden sm:block">CodeArena</span>
           </NavLink>
 
           {/* Search bar */}
@@ -131,16 +125,16 @@ function Homepage() {
                 placeholder="Search problems..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                className="input input-sm input-bordered w-full pl-9 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                className="input input-sm input-bordered w-full pl-9 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/15 rounded-lg"
               />
             </div>
           </div>
 
           {/* Center nav links */}
-          <div className="hidden lg:flex items-center gap-6 text-sm font-medium">
-            <NavLink to="/home" className="opacity-70 hover:opacity-100 transition-opacity">Problems</NavLink>
-            <NavLink to="/algorithms" className="opacity-70 hover:opacity-100 transition-opacity">Visualizer</NavLink>
-            <NavLink to="/blog" className="opacity-70 hover:opacity-100 transition-opacity">Blog</NavLink>
+          <div className="hidden lg:flex items-center gap-6 text-sm font-medium" style={{ color: '#64748B' }}>
+            <NavLink to="/home" className="hover:text-blue-700 transition-colors">Problems</NavLink>
+            <NavLink to="/algorithms" className="hover:text-blue-700 transition-colors">Visualizer</NavLink>
+            <NavLink to="/blog" className="hover:text-blue-700 transition-colors">Blog</NavLink>
           </div>
 
           {/* Right actions */}
@@ -203,29 +197,18 @@ function Homepage() {
               <div>
                 <p className="text-xs opacity-50 font-medium uppercase tracking-wide">Overall Progress</p>
                 <p className="text-2xl font-extrabold mt-0.5">
-                  <span style={{
-                    background: 'linear-gradient(135deg, #6366f1, #06b6d4)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}>{solvedCount}</span>
+                  <span style={{ color: '#1D4ED8' }}>{solvedCount}</span>
                   <span className="text-base opacity-40 font-normal"> / {problems.length}</span>
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-3xl font-extrabold" style={{
-                  background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}>{progressPct}%</p>
+                <p className="text-3xl font-extrabold" style={{ color: '#1D4ED8' }}>{progressPct}%</p>
               </div>
             </div>
             <div className="w-full bg-base-300 rounded-full h-2">
               <div
                 className="h-2 rounded-full transition-all duration-700"
-                style={{
-                  width: `${progressPct}%`,
-                  background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #06b6d4)',
-                }}
+                style={{ width: `${progressPct}%`, background: '#1D4ED8' }}
               />
             </div>
           </div>
@@ -365,7 +348,7 @@ function Homepage() {
                 {/* Topic */}
                 <div className="col-span-2 flex items-center">
                   <span className="text-xs px-2.5 py-1 rounded-full font-medium"
-                    style={{ background: 'rgba(99,102,241,0.1)', color: '#6366f1', border: '1px solid rgba(99,102,241,0.2)' }}>
+                    style={{ background: '#EFF6FF', color: '#1D4ED8', border: '1px solid #BFDBFE' }}>
                     {problem.tags || '—'}
                   </span>
                 </div>

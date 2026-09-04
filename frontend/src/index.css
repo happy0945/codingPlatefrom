@@ -13,7 +13,6 @@
 
 html {
   scroll-behavior: smooth;
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 body {
@@ -44,25 +43,16 @@ code, pre, .font-mono {
   to   { opacity: 1; }
 }
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(30px); }
+  from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes slideInLeft {
-  from { opacity: 0; transform: translateX(-40px); }
+  from { opacity: 0; transform: translateX(-32px); }
   to   { opacity: 1; transform: translateX(0); }
 }
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-12px); }
-}
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
-  50%       { box-shadow: 0 0 40px rgba(99, 102, 241, 0.7), 0 0 80px rgba(99, 102, 241, 0.2); }
-}
-@keyframes gradientShift {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  50%       { transform: translateY(-10px); }
 }
 @keyframes blink {
   0%, 100% { opacity: 1; }
@@ -71,28 +61,23 @@ code, pre, .font-mono {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
-@keyframes drift {
-  0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0.6; }
-  33%  { transform: translateY(-20px) translateX(10px) rotate(120deg); }
-  66%  { transform: translateY(-10px) translateX(-10px) rotate(240deg); }
-  100% { transform: translateY(0) translateX(0) rotate(360deg); opacity: 0.6; }
-}
 @keyframes messageIn {
   from { opacity: 0; transform: translateY(8px) scale(0.97); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes typewriter {
+  from { width: 0; }
+  to   { width: 100%; }
 }
 
 /* =====================================================
    ANIMATION UTILITY CLASSES
    ===================================================== */
-.animate-fadeIn      { animation: fadeIn 0.6s ease forwards; }
-.animate-slideUp     { animation: slideUp 0.6s ease forwards; }
-.animate-slideInLeft { animation: slideInLeft 0.6s ease forwards; }
+.animate-fadeIn      { animation: fadeIn 0.5s ease forwards; }
+.animate-slideUp     { animation: slideUp 0.5s ease forwards; }
+.animate-slideInLeft { animation: slideInLeft 0.5s ease forwards; }
 .animate-float       { animation: float 3s ease-in-out infinite; }
-.animate-pulseGlow   { animation: pulseGlow 2s ease-in-out infinite; }
-.animate-gradient    { background-size: 200% 200%; animation: gradientShift 6s ease infinite; }
 .animate-blink       { animation: blink 1s step-end infinite; }
-.animate-drift       { animation: drift 6s ease-in-out infinite; }
 .animate-messageIn   { animation: messageIn 0.3s ease forwards; }
 
 /* Stagger delays */
@@ -102,49 +87,104 @@ code, pre, .font-mono {
 .delay-400 { animation-delay: 0.4s; animation-fill-mode: both; }
 .delay-500 { animation-delay: 0.5s; animation-fill-mode: both; }
 .delay-600 { animation-delay: 0.6s; animation-fill-mode: both; }
-.delay-700 { animation-delay: 0.7s; animation-fill-mode: both; }
 
 /* =====================================================
-   BRAND GRADIENTS
+   DESIGN TOKENS — CodeBase style
+   =====================================================
+   Light:  bg #F5F7FA, surface #FFFFFF, border #E5E7EB
+           text #0F172A, muted #64748B, blue #1D4ED8
+   Dark:   bg #0C0C0C, surface #141414, border #252525
+           text #F1F5F9, muted #6B7280, blue #3B82F6
    ===================================================== */
-.gradient-brand {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+
+/* Brand blue — used everywhere as primary */
+.btn-blue {
+  background: #1D4ED8;
+  color: #ffffff;
+  border: none;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: background 0.15s ease, opacity 0.15s ease;
 }
-.gradient-text {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.btn-blue:hover { background: #1E40AF; }
+
+/* Light mode equivalent */
+[data-theme="light"] .btn-blue { background: #1D4ED8; }
+[data-theme="light"] .btn-blue:hover { background: #1E40AF; }
+[data-theme="dark"]  .btn-blue { background: #2563EB; }
+[data-theme="dark"]  .btn-blue:hover { background: #1D4ED8; }
+
+/* Outlined button */
+.btn-outline-blue {
+  background: transparent;
+  color: #1D4ED8;
+  border: 1.5px solid #1D4ED8;
+  font-weight: 600;
+  transition: background 0.15s ease;
 }
-.gradient-hero {
-  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+.btn-outline-blue:hover { background: rgba(29,78,216,0.06); }
+[data-theme="dark"] .btn-outline-blue { color: #60A5FA; border-color: #60A5FA; }
+[data-theme="dark"] .btn-outline-blue:hover { background: rgba(96,165,250,0.08); }
+
+/* =====================================================
+   NAVBAR
+   ===================================================== */
+.navbar-clean {
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid #E5E7EB;
+}
+[data-theme="dark"] .navbar-clean {
+  background: rgba(20,20,20,0.95);
+  border-bottom: 1px solid #252525;
 }
 
 /* =====================================================
-   GLASSMORPHISM
+   CARD — clean flat style
    ===================================================== */
-.glass {
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.card-clean {
+  background: #ffffff;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
-.glass-dark {
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+.card-clean:hover {
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  border-color: #D1D5DB;
+}
+[data-theme="dark"] .card-clean {
+  background: #141414;
+  border-color: #252525;
+}
+[data-theme="dark"] .card-clean:hover {
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  border-color: #333;
 }
 
-/* =====================================================
-   CARD HOVER
-   ===================================================== */
+/* Legacy card-hover kept for compatibility */
 .card-hover {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+[data-theme="dark"] .card-hover:hover {
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+/* =====================================================
+   CODE BLOCK — light blue in light mode, dark in dark
+   ===================================================== */
+.code-surface {
+  background: #EEF2FF;
+  border: 1px solid #C7D2FE;
+  border-radius: 12px;
+}
+[data-theme="dark"] .code-surface {
+  background: #111827;
+  border-color: #1F2937;
 }
 
 /* =====================================================
@@ -152,45 +192,99 @@ code, pre, .font-mono {
    ===================================================== */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #8b5cf6; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #374151; }
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: #4B5563; }
 
 /* =====================================================
    DIFFICULTY BADGES
    ===================================================== */
-.badge-easy   { background: rgba(34,197,94,0.15);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
-.badge-medium { background: rgba(234,179,8,0.15);  color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
-.badge-hard   { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+.badge-easy   { background: rgba(34,197,94,0.1);  color: #16a34a; border: 1px solid rgba(34,197,94,0.25); }
+.badge-medium { background: rgba(234,179,8,0.1);  color: #ca8a04; border: 1px solid rgba(234,179,8,0.25); }
+.badge-hard   { background: rgba(239,68,68,0.1);  color: #dc2626; border: 1px solid rgba(239,68,68,0.25); }
+
+[data-theme="dark"] .badge-easy   { color: #22c55e; }
+[data-theme="dark"] .badge-medium { color: #eab308; }
+[data-theme="dark"] .badge-hard   { color: #ef4444; }
 
 /* =====================================================
    ADMIN PANEL
    ===================================================== */
 .admin-card {
-  background: var(--fallback-b1, oklch(var(--b1)));
-  border: 1px solid rgba(99,102,241,0.15);
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  background: #ffffff;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 .admin-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 24px 48px rgba(0,0,0,0.25);
-  border-color: rgba(99,102,241,0.4);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  border-color: #D1D5DB;
+}
+[data-theme="dark"] .admin-card {
+  background: #141414;
+  border-color: #252525;
+}
+[data-theme="dark"] .admin-card:hover {
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+  border-color: #333;
 }
 
 /* =====================================================
    AI CHAT
    ===================================================== */
 .chat-msg-ai {
-  background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.08));
-  border: 1px solid rgba(99,102,241,0.2);
-  border-radius: 0 16px 16px 16px;
+  background: #F0F4FF;
+  border: 1px solid #C7D2FE;
+  border-radius: 0 12px 12px 12px;
+  color: #1E3A8A;
+}
+[data-theme="dark"] .chat-msg-ai {
+  background: rgba(37,99,235,0.1);
+  border-color: rgba(37,99,235,0.25);
+  color: #93C5FD;
 }
 .chat-msg-user {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  border-radius: 16px 0 16px 16px;
+  background: #1D4ED8;
+  color: #ffffff;
+  border-radius: 12px 0 12px 12px;
+}
+[data-theme="dark"] .chat-msg-user {
+  background: #2563EB;
 }
 
 /* Problem page syntax highlight helpers */
-.code-keyword { color: #c084fc; }
-.code-string  { color: #34d399; }
-.code-comment { color: #6b7280; font-style: italic; }
-.code-number  { color: #f59e0b; }
+.code-keyword { color: #7C3AED; }
+.code-string  { color: #059669; }
+.code-comment { color: #6B7280; font-style: italic; }
+.code-number  { color: #D97706; }
+[data-theme="dark"] .code-keyword { color: #C084FC; }
+[data-theme="dark"] .code-string  { color: #34D399; }
+[data-theme="dark"] .code-number  { color: #F59E0B; }
+
+/* =====================================================
+   FORM INPUTS — unified focus ring
+   ===================================================== */
+.input-clean {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1.5px solid #E5E7EB;
+  background: #ffffff;
+  font-size: 0.875rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  outline: none;
+}
+.input-clean:focus {
+  border-color: #1D4ED8;
+  box-shadow: 0 0 0 3px rgba(29,78,216,0.12);
+}
+[data-theme="dark"] .input-clean {
+  background: #1C1C1C;
+  border-color: #333;
+  color: #F1F5F9;
+}
+[data-theme="dark"] .input-clean:focus {
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+}
